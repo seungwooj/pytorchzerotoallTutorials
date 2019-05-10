@@ -1,4 +1,4 @@
-# Exercise 4-4: Compute gradients using computational graph (manually)
+# Exercise 4-4: Compute gradients using computational graph (manually) - same as ex3.2
 
 # give data
 x_data = [1.0, 2.0, 3.0]
