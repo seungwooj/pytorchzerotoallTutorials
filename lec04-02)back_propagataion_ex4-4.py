@@ -1,5 +1,5 @@
+# Exercise 4-4: Compute gradients using computational graph (manually)
 
-# Gradient Descent  for multivariable equation
 # give data
 x_data = [1.0, 2.0, 3.0]
 y_data = [2.0, 4.0, 6.0]
@@ -15,7 +15,7 @@ def forward(x):
 def loss(x, y):
     y_pred = forward(x)
     return (y_pred - y) * (y_pred - y)
-# compute gradient
+# compute gradients
 def gradient_w1(x, y):
     return 2 * x * (w1 * x + w2 * (x * x) - y + b)
 def gradient_w2(x, y):
