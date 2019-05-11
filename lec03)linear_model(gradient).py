@@ -30,7 +30,7 @@ for epoch in range(100):
         grad = calculate_gradient(x_val, y_val, w_initial)
         w_new = w_initial - 0.01 * grad
         print("\tgrad: ", x_val, y_val, grad)
-        loss = calculate_loss(x_val, y_val, w_initial)
+        loss = calculate_loss(x_val, y_val, w_new)
         w_initial = w_new
     print("progress:", epoch, "w=", w_initial, "loss=", loss)
 # After training
