@@ -10,7 +10,7 @@ b = 1.0
 
 # our hypothesis for the linear model
 def forward(x):
-    return np.sqrt(x) * w2 + x * w1 + b
+    return (x * x) * w2 + x * w1 + b
 # cost(loss) function
 def loss(x, y):
     y_pred = forward(x)

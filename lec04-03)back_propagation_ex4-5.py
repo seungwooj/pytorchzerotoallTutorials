@@ -13,7 +13,7 @@ b = 1.0
 
 # our hypothesis for the linear model
 def forward(x):
-    return np.sqrt(x) * w2 + x * w1 + b
+    return (x * x) * w2 + x * w1 + b
 # cost(loss) function
 def loss(x, y):
     y_pred = forward(x)
@@ -21,14 +21,14 @@ def loss(x, y):
 
 
 # Before training
-print("predict (before training)", "4 hours", forward(4).data[0])
+print("predict (before training)", "4 hours", forward(4).data)
 
 # Training loop
 for epoch in range(100):
     for x_val, y_val in zip(x_data, y_data):
         l = loss(x_val, y_val)
         l.backward()
-        print("\tgrad: ", x_val, y_val, w1.grad.data[0], w2.grad.data[0])
+        print("\tgrad: ", x_val, y_val, w1.grad.data, w2.grad.data)
         w1.data = w1.data - 0.01 * w1.grad.data
         w2.data = w2.data - 0.01 * w2.grad.data
 
@@ -36,7 +36,7 @@ for epoch in range(100):
         w1.grad.data.zero_()
         w2.grad.data.zero_()
 
-    print("progress:", epoch, l.data[0])
+    print("progress:", epoch, l.data)
 
 # After Training
-print("predict (after training)", 4, forward(4).data[0])
+print("predict (after training)", 4, forward(4).data)
