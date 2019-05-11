@@ -1,21 +1,26 @@
-# exercist 4-3 : implement computational graph and backprop using Numpy - same as ex3.0
+# exercise 4-3 : implement computational graph and backprop using Numpy - same as ex3.0
 
-import numpy as np
 
 x_data = [1.0, 2.0, 3.0]
-y_data = [2.0, 4.0, 6.0]'
+y_data = [2.0, 4.0, 6.0]
 w = 1
+
 
 # our hypothesis for the linear model
 def forward(x):
     return x * w
+
+
 # cost(loss) function
 def loss(x, y):
     y_pred = forward(x)
     return (y_pred - y) * (y_pred - y)
+
+
 # compute gradient
 def gradient(x, y):
     return 2 * x * (x * w - y)
+
 
 # Before training
 print("predict (before training)", 4, forward(4))
@@ -25,7 +30,7 @@ for epoch in range(100):
         grad = gradient(x_val, y_val)
         w = w - 0.01 * grad
         print("\tgrad: ", x_val, y_val, grad)
-        l = loss(x_val, y_val)
+        loss = loss(x_val, y_val)
 
 # After training
 print("predict (after training)", 4, forward(4))
