@@ -27,23 +27,24 @@ class ModelSigmoid(nn.Module):
 
     def __init__(self):
         super(ModelSigmoid, self).__init__()
+        layers = []
+        for i in range(len(dim_list) - 1):
+            layers.append(nn.Linear(dim_list[i], dim_list[i + 1]))
+            layers.append(nn.Sigmoid())
 
-        self.layer1 = nn.Sequential(nn.Linear(8, 6), nn.Sigmoid())
-        self.layer2 = nn.Sequential(nn.Linear(6, 4), nn.Sigmoid())
-        self.layer3 = nn.Sequential(nn.Linear(4, 1), nn.Sigmoid())
+        self.layer = nn.Sequential(*layers)
 
     def forward(self, seq):
-        seq = self.layer1(seq)
-        seq = self.layer2(seq)
-        y = self.layer3(seq)
+        y = self.layer(seq)
         return y
 
 
+dim_list = [8, 6, 4, 1]
 model = ModelSigmoid()
 
 # Construct loss function and optimizer
 criterion = nn.BCELoss(reduction='mean')
-optimizer = torch.optim.SGD(model.parameters(), lr = 0.1)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 
 for epoch in range(2):
     for i, data in enumerate(train_loader, 0):
