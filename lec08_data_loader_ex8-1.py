@@ -51,7 +51,11 @@ class TitanicDataSet(Dataset):
 dataSet = TitanicDataSet()
 print(dataSet.len)
 train_loader = DataLoader(dataset=dataSet, batch_size=64, shuffle=True, num_workers=10)
-# print(train_loader.)
+
+print(train_loader.dataset.x_data)
+print("")
+print(train_loader.dataset.y_data)
+
 
 
 
