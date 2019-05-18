@@ -29,7 +29,7 @@ class Model(torch.nn.Module):
 
 
 dim_list = [8, 6, 4, 1]
-model = Model(dim_list)
+model = Model()
 
 criterion = torch.nn.BCELoss(reduction='mean')
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
