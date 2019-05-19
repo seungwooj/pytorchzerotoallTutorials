@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torch.nn as nn
 
 # give data using numpy
 xy = np.loadtxt('data-diabetes.csv', delimiter=',', dtype=np.float32)
@@ -9,26 +10,25 @@ y_data = torch.from_numpy(xy[:, [-1]])
 
 # check data shape
 print(x_data.shape)  # [759, 8]
-print(y_data.shape) # [759, 1]
+print(y_data.shape)  # [759, 1]
 
 
 class Model(torch.nn.Module):
     def __init__(self):
         super(Model, self).__init__()
-        self.l1 = torch.nn.Linear(8, 6)
-        self.l2 = torch.nn.Linear(6, 4)
-        self.l3 = torch.nn.Linear(4, 1)
+        layers = []
+        for i in range(len(dim_list) - 1):
+            layers.append(nn.Linear(dim_list[i], dim_list[i + 1]))
+            layers.append(nn.Sigmoid())
 
-        self.sigmoid = torch.nn.Sigmoid()
+        self.layer = nn.Sequential(*layers)
 
-    def forward(self, x):
-        # use three layers to define forward function.
-        out1 = self.sigmoid(self.l1(x))
-        out2 = self.sigmoid(self.l2(out1))
-        y = self.sigmoid(self.l3(out2))
+    def forward(self, seq):
+        y = self.layer(seq)
         return y
 
 
+dim_list = [8, 6, 4, 1]
 model = Model()
 
 criterion = torch.nn.BCELoss(reduction='mean')
