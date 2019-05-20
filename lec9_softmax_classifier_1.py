@@ -22,7 +22,7 @@ loss = nn.CrossEntropyLoss()
 # Input is class, not one-hot
 Y = torch.LongTensor([0])
 
-# input is size nBatch * nClasses = 1 * 4
+# input is size nBatch * nClasses = 1 * 3
 # Y_pred are logits (not softmax)
 Y_pred1 = torch.Tensor([[2.0, 1.0, 0.1]])
 Y_pred2 = torch.Tensor([[0.5, 2.0, 0.3]])
