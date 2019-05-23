@@ -46,6 +46,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 # Run training cycle
 def train(epoch):
     model.train()
+    total = len(train_loader.dataset)
     for batch_idx, (data, target) in enumerate(train_loader):
         # data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
@@ -56,10 +57,8 @@ def train(epoch):
 
         if batch_idx % 100 == 0:
             present = batch_idx * len(data)
-            total = len(train_loader.dataset)
             progress = 100. * batch_idx / len(train_loader)
             updated_loss = loss.data.item()
-
             print(f'Train Epoch: {epoch} [{present}/{total} ({progress:.0f}%)]\tLoss: {updated_loss:.5f}')
 
 
