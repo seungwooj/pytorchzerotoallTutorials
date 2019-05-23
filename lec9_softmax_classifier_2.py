@@ -15,7 +15,6 @@ transform = transforms.Compose([
 train_dataset = datasets.MNIST(root='../data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST(root='../data', train=False, transform=transform)
 
-
 # Data Loader (pipeline)
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
@@ -56,9 +55,12 @@ def train(epoch):
         optimizer.step()
 
         if batch_idx % 100 == 0:
-            print('Train Epoch: {} [{}/{} ({:0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data.item()))
+            present = batch_idx * len(data)
+            total = len(train_loader.dataset)
+            progress = 100. * batch_idx / len(train_loader)
+            updated_loss = loss.data.item()
+
+            print(f'Train Epoch: {epoch} [{present}/{total} ({progress:.0f}%)]\tLoss: {updated_loss:.5f}')
 
 
 # Check model accuracy
@@ -76,9 +78,9 @@ def test():
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
     test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.
-          format(test_loss, correct, len(test_loader.dataset),
-                 100. * correct / len(test_loader.dataset)))
+    total = len(test_loader.dataset)
+    updated_accuracy = 100. * correct / len(test_loader.dataset)
+    print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{total} ({updated_accuracy:.0f}%)\n')
 
 
 for epoch in range(1, 10):
