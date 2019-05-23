@@ -12,11 +12,12 @@ transform = transforms.Compose([
 ])
 
 # MNIST Data Sets
-train_dataset = datasets.MNIST(root='../data', train=True, download=True, transform=transforms)
-test_dataset = datasets.MNIST(root='../data', train=False, transform=transforms)
+train_dataset = datasets.MNIST(root='../data', train=True, download=True, transform=transform)
+test_dataset = datasets.MNIST(root='../data', train=False, transform=transform)
+
 
 # Data Loader (pipeline)
-train_loader = DataLoader(dataset=train_dataset, batch_size= batch_size, shuffle=True)
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
 
@@ -32,6 +33,7 @@ class Net(nn.Module):
         self.layer = nn.Sequential(*layers)
 
     def forward(self, seq):
+        seq = seq.view(-1, 784)
         y = self.layer(seq)
         return y
 
@@ -53,22 +55,22 @@ def train(epoch):
         loss.backward()
         optimizer.step()
 
-        if batch_idx % 10 == 0:
+        if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data[0]))
+                100. * batch_idx / len(train_loader), loss.data.item()))
 
 
 # Check model accuracy
 def test():
-    model.test()  # model.eval() ?
+    model.eval()  # model.eval() ?
     test_loss = 0
     correct = 0
     for data, target in test_loader:
         # data, target = Variable(data, volatile=True), Variable(target)
         output = model(data)  # TypeError 발생의 원인으로 생각되는 부분
         # sum up batch loss
-        test_loss += criterion(output, target, size_average=False).data[0]
+        test_loss += criterion(output, target).data.item()
         # get the index of the max Log-probability
         pred = torch.max(output.data, 1)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
