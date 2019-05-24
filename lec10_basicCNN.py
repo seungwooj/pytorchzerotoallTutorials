@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
+import torch.nn.functional as f
 from torch.utils.data import DataLoader
 
 
@@ -12,41 +13,34 @@ transform = transforms.Compose([
 ])
 
 # MNIST Data Sets
-train_dataset = datasets.MNIST(root='../data', train=True, download=True, transform=transforms)
-test_dataset = datasets.MNIST(root='../data', train=False, transform=transforms)
+train_dataSet = datasets.MNIST(root='../data', train=True, download=True, transform=transform)
+test_dataSet = datasets.MNIST(root='../data', train=False, transform=transform)
 
 
 # Data Loader (pipeline)
-train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+train_loader = DataLoader(dataset=train_dataSet, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(dataset=test_dataSet, batch_size=batch_size, shuffle=True)
 
 
 # Build CNN model
 class Net(nn.Module):
-    def __init__(self, dim_list):
+    def __init__(self):
         super(Net, self).__init__()
-        layers = []
-        for i in range(len(dim_list) - 1):
-            # Modeling fully connected layers - Pooling layers - Conv layers
-            layers.append(nn.ReLU(
-                nn.MaxPool2d(
-                    nn.Conv2d(dim_list[i], dim_list[i + 1], kernel_size=5)
-                )))
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.mp = nn.MaxPool2d(2)
+        self.fc = nn.Linear(320, 10)
 
-        self.layer = nn.Sequential(*layers)
-        self.fc = nn.Linear(lin_input, lin_output)
-
-    def forward(self, seq):
-        y = self.fc(self.layer(seq))
-        return nn.functional.log_softmax(y)
+    def forward(self, x):
+        in_size = x.size(0)
+        x = f.relu(self.mp(self.conv1(x)))
+        x = f.relu(self.mp(self.conv2(x)))
+        x = x.view(in_size, -1)
+        x = self.fc(x)
+        return f.log_softmax(x, dim=1)  # avoid deprecation : write dimension for softmax
 
 
-# values for parameters in the model
-dim_list = [1, 10, 20]
-lin_input = 320
-lin_output = 10
-
-model = Net(dim_list)
+model = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
@@ -54,42 +48,42 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 # Run training cycle
 def train(epoch):
     model.train()
+    total = len(train_loader.dataset)
     for batch_idx, (data, target) in enumerate(train_loader):
-        # data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
-        output = model(data)  # TypeError 발생의 원인으로 생각되는 부분
+        output = model(data)
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
 
-        if batch_idx % 10 == 0:
-            print('Train Epoch: {} [{}/{} ({:0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data[0]))
+        if batch_idx % 100 == 0:
+            present = batch_idx * len(data)
+            progress = 100. * batch_idx / len(train_loader)
+            updated_loss = loss.data.item()
+            print(f'Train Epoch: {epoch} [{present}/{total} ({progress:.0f}%]'
+                  f'\tLoss: {updated_loss:.5f}')
 
 
 # Check model accuracy
 def test():
-    model.test()  # model.eval() ?
+    model.eval()
     test_loss = 0
     correct = 0
     for data, target in test_loader:
-        # data, target = Variable(data, volatile=True), Variable(target)
-        output = model(data)  # TypeError 발생의 원인으로 생각되는 부분
+        output = model(data)
         # sum up batch loss
-        test_loss += criterion(output, target, size_average=False).data[0]
+        test_loss += criterion(output, target).data.item()
         # get the index of the max Log-probability
         pred = torch.max(output.data, 1)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
     test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.
-          format(test_loss, correct, len(test_loader.dataset),
-                 100. * correct / len(test_loader.dataset)))
+    total = len(test_loader.dataset)
+    updated_accuracy = 100. * correct / len(test_loader.dataset)
+    print(f'\nTest set: Average loss: {test_loss:.4f}, '
+          f'Accuracy: {correct}/{total} ({updated_accuracy:.0f}%)\n')
 
 
 for epoch in range(1, 10):
     train(epoch)
     test()
-
-
