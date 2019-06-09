@@ -44,8 +44,6 @@ Y_pred2 = torch.Tensor([[0.8, 0.2, 0.3],
 l1 = loss(Y_pred1, Y)
 l2 = loss(Y_pred2, Y)
 
-<<<<<<< HEAD
+
 print("Batch Loss1 = ", l1.data, "\nBatch Loss2 = ", l2.data)
-=======
 print("Batch Loss1 = ", l1.data, "\nBatch Loss2 = ", l2.data)
->>>>>>> cf7ae6ae7c8497987c367d173dfdf05b0c5c36dc
